@@ -1,12 +1,10 @@
-import { Link } from 'react-router-dom'
+import { Profile } from '../../components/Profile'
+import { HomeContainer } from './styles'
 
 export function Home() {
   return (
-    <main>
-      <h1>Blog</h1>
-      <Link to="/post" style={{ textDecoration: 'underline' }}>
-        Ver post
-      </Link>
-    </main>
+    <HomeContainer>
+      <Profile />
+    </HomeContainer>
   )
 }
