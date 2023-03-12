@@ -34,7 +34,11 @@ export const Avatar = styled.div`
   }
 `
 
-export const Bio = styled.div``
+export const Bio = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+`
 
 export const Header = styled.div`
   display: flex;
@@ -69,6 +73,7 @@ export const Text = styled.div`
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  margin-bottom: 1.5rem;
 
   @media (min-width: ${({ theme }) => theme.screens.md}) {
     -webkit-line-clamp: 2;
@@ -80,7 +85,7 @@ export const InfoContainer = styled.div`
   justify-content: center;
   flex-wrap: wrap;
   gap: 0.75rem 1.5rem;
-  margin-top: 1.5rem;
+  margin-top: auto;
 
   @media (min-width: ${({ theme }) => theme.screens.md}) {
     justify-content: initial;
