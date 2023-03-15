@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { formatDistanceToNow } from 'date-fns'
 import ptBR from 'date-fns/locale/pt-BR'
 import ReactMarkdown from 'react-markdown'
@@ -13,6 +13,8 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 
 import { Link } from '../../components/Link'
+import { Loading } from '../../components/Loading'
+import { Container } from '../../components/Container'
 
 import {
   Info,
@@ -24,29 +26,48 @@ import {
   PostInfoHeading,
 } from './styles'
 
-import { PostDTO } from '../../dtos/PostDTO'
 import { api } from '../../services/api'
+import { PostDTO } from '../../dtos/PostDTO'
 
 export function Post() {
-  const [post, setPost] = useState<PostDTO | null>(null)
+  const [post, setPost] = useState<PostDTO>({} as PostDTO)
+  const [isLoading, setIsLoading] = useState(true)
+
   const { issueNumber } = useParams()
+  const navigate = useNavigate()
 
   useEffect(() => {
     async function fetchPost() {
       try {
+        setIsLoading(true)
         const response = await api.get(
           `/repos/AdaltoJunior/github-blog/issues/${issueNumber}`,
         )
         setPost(response.data)
       } catch (error) {
-        console.log(error)
+        navigate('/')
+      } finally {
+        setIsLoading(false)
       }
     }
 
     fetchPost()
-  }, [issueNumber])
+  }, [issueNumber, navigate])
 
-  if (!post) return
+  if (isLoading) {
+    return (
+      <Container
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          paddingBlock: '3.75rem',
+        }}
+      >
+        <Loading />
+      </Container>
+    )
+  }
 
   return (
     <PostContainer>
