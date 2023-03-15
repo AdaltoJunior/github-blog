@@ -1,20 +1,31 @@
+import ReactMarkdown from 'react-markdown'
+import { formatDistanceToNow } from 'date-fns'
+import ptBR from 'date-fns/locale/pt-BR'
+
+import { PostDTO } from '../../dtos/PostDTO'
+
 import { Container, Content, Header, Heading, Link, Time } from './styles'
 
-export function PostCard() {
+interface PostCardProps {
+  post: PostDTO
+}
+
+export function PostCard({ post }: PostCardProps) {
   return (
     <Container>
       <Header>
-        <Heading>JavaScript data types and data structures</Heading>
-        <Time>Há 1 dia</Time>
+        <Heading>{post.title}</Heading>
+        <Time>
+          {formatDistanceToNow(new Date(post.created_at), {
+            addSuffix: true,
+            locale: ptBR,
+          })}
+        </Time>
       </Header>
       <Content>
-        Programming languages all have built-in data structures, but these often
-        differ from one language to another. This article attempts to list the
-        built-in data structures available in JavaScript and what properties
-        they have. These can be used to build other data structures. Wherever
-        possible, comparisons with other languages are drawn.
+        <ReactMarkdown>{post.body}</ReactMarkdown>
       </Content>
-      <Link to="/post">Abrir postagem</Link>
+      <Link to={`/post/${post.number}`}>Abrir postagem</Link>
     </Container>
   )
 }

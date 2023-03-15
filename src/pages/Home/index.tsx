@@ -1,3 +1,8 @@
+import { ChangeEvent, useEffect, useState } from 'react'
+
+import { api } from '../../services/api'
+import { PostDTO } from '../../dtos/PostDTO'
+
 import { Profile } from '../../components/Profile'
 import { PostCard } from '../../components/PostCard'
 
@@ -11,6 +16,30 @@ import {
 } from './styles'
 
 export function Home() {
+  const [posts, setPosts] = useState<PostDTO[]>([])
+  const [searchValue, setSearchValue] = useState('')
+
+  async function fetchPosts(query = '') {
+    try {
+      const response = await api.get('/search/issues', {
+        params: {
+          q: `${query}repo:AdaltoJunior/github-blog`,
+        },
+      })
+      setPosts(response.data.items)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  function handleSearchChange(event: ChangeEvent<HTMLInputElement>) {
+    setSearchValue(event.target.value)
+  }
+
+  useEffect(() => {
+    fetchPosts()
+  }, [])
+
   return (
     <HomeContainer>
       <Profile />
@@ -18,14 +47,20 @@ export function Home() {
       <SearchContainer>
         <SearchHeader>
           <SearchHeading>Publicações</SearchHeading>
-          <SearchCounter>6 publicações</SearchCounter>
+          <SearchCounter>
+            {posts.length} {posts.length < 2 ? 'publicação' : 'publicações'}
+          </SearchCounter>
         </SearchHeader>
-        <input type="text" placeholder="Buscar conteúdo" />
+        <input
+          value={searchValue}
+          onChange={handleSearchChange}
+          placeholder="Buscar conteúdo"
+        />
       </SearchContainer>
 
       <PostContainer>
-        {Array.from({ length: 6 }).map((_, index) => (
-          <PostCard key={index} />
+        {posts.map((post) => (
+          <PostCard key={post.id} post={post} />
         ))}
       </PostContainer>
     </HomeContainer>

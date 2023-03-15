@@ -1,3 +1,8 @@
+import { useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
+import { formatDistanceToNow } from 'date-fns'
+import ptBR from 'date-fns/locale/pt-BR'
+import ReactMarkdown from 'react-markdown'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faGithub } from '@fortawesome/free-brands-svg-icons'
 import {
@@ -19,7 +24,30 @@ import {
   PostInfoHeading,
 } from './styles'
 
+import { PostDTO } from '../../dtos/PostDTO'
+import { api } from '../../services/api'
+
 export function Post() {
+  const [post, setPost] = useState<PostDTO | null>(null)
+  const { issueNumber } = useParams()
+
+  useEffect(() => {
+    async function fetchPost() {
+      try {
+        const response = await api.get(
+          `/repos/AdaltoJunior/github-blog/issues/${issueNumber}`,
+        )
+        setPost(response.data)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    fetchPost()
+  }, [issueNumber])
+
+  if (!post) return
+
   return (
     <PostContainer>
       <PostInfo>
@@ -28,35 +56,35 @@ export function Post() {
             <FontAwesomeIcon icon={faChevronLeft} />
             <span>Voltar</span>
           </Link>
-          <Link to="/">
+          <Link to={post.html_url} target="_blank">
             <span>Ver no Github</span>
             <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
           </Link>
         </PostInfoHeader>
-        <PostInfoHeading>
-          JavaScript data types and data structures
-        </PostInfoHeading>
+        <PostInfoHeading>{post.title}</PostInfoHeading>
         <InfoContainer>
           <Info>
             <FontAwesomeIcon icon={faGithub} />
-            <span>cameronwll</span>
+            <span>{post.user.login}</span>
           </Info>
           <Info>
             <FontAwesomeIcon icon={faCalendar} />
-            <span>Há 1 dia</span>
+            <span>
+              {formatDistanceToNow(new Date(post.created_at), {
+                addSuffix: true,
+                locale: ptBR,
+              })}
+            </span>
           </Info>
           <Info>
             <FontAwesomeIcon icon={faComment} />
-            <span>5 comentários</span>
+            <span>{post.comments} comentários</span>
           </Info>
         </InfoContainer>
       </PostInfo>
 
       <PostContent>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Adipisci, in
-        earum. Porro magnam voluptate vel, esse quam quisquam doloremque at
-        veniam quidem, eveniet odio quia illo ipsum eligendi perferendis
-        laudantium.
+        <ReactMarkdown>{post.body}</ReactMarkdown>
       </PostContent>
     </PostContainer>
   )

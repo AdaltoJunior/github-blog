@@ -53,4 +53,29 @@ export const Info = styled.div`
 
 export const PostContent = styled.div`
   padding: 2.5rem 2rem;
+
+  & > * + * {
+    margin-top: 1em;
+  }
+
+  a {
+    color: ${({ theme }) => theme.colors.accent};
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    color: ${({ theme }) => theme.colors.title};
+  }
+
+  h1,
+  h2 {
+    border-bottom: 1px solid ${({ theme }) => theme.colors.span};
+    padding-bottom: 0.25em;
+  }
+
+  li + li {
+    margin-top: 0.5em;
+  }
 `
