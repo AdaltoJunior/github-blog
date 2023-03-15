@@ -18,6 +18,7 @@ import {
 export function Home() {
   const [posts, setPosts] = useState<PostDTO[]>([])
   const [searchValue, setSearchValue] = useState('')
+  const [searchTimeout, setSearchTimeout] = useState<any>(null)
 
   async function fetchPosts(query = '') {
     try {
@@ -33,7 +34,17 @@ export function Home() {
   }
 
   function handleSearchChange(event: ChangeEvent<HTMLInputElement>) {
-    setSearchValue(event.target.value)
+    const currentValue = event.target.value
+
+    clearTimeout(searchTimeout)
+
+    setSearchTimeout(
+      setTimeout(() => {
+        fetchPosts(currentValue)
+      }, 500),
+    )
+
+    setSearchValue(currentValue)
   }
 
   useEffect(() => {
